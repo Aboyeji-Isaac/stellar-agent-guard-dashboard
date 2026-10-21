@@ -37,6 +37,7 @@ import {
 import { evaluateDmsAlert, formatDmsDuration, type DmsAlert } from "../lib/guard/dmsAlert.ts";
 import { calculateVelocity } from "../lib/guard/velocity.ts";
 import { useStatusTransitionAnnouncer } from "../lib/guard/statusTransitions.ts";
+import { usePrivacy } from "../lib/guard/privacyStore.ts";
 
 /**
  * The proactive dead-man-switch deadline banner, shown above the on-chain
@@ -165,6 +166,7 @@ export function StatusPanel() {
   // Watermark only: the panel gains the striped training tint while a rehearsal
   // is running. Read from the store as a snapshot, never as a ref.
   const rehearsalActive = useRehearsalActive();
+  const { masked } = usePrivacy();
 
   // Safe failure context (issue #347). The chain layer attaches a diagnostic to
   // each failed read; a refresh that never produced a snapshot contributes one
@@ -225,7 +227,10 @@ export function StatusPanel() {
         </div>
 
         <p className="tiny muted" style={{ marginTop: 10 }}>
-          <span className="mono">{guard}</span> <CopyButton value={guard} label="guard address" />
+          <span className="mono" aria-label={masked ? "Masked guard address" : undefined}>
+            {masked ? "••••••••••••••••" : guard}
+          </span>{" "}
+          <CopyButton value={guard} label="guard address" />
         </p>
 
         <RehearsalModeToggle />
@@ -312,10 +317,13 @@ export function StatusPanel() {
                     <>
                       <h4 style={{ marginTop: 20 }}>Spending Velocity</h4>
                       <div className="grid">
-                        <Stat label="1m Velocity" value={metrics.spend1m.toString()} />
+                        <Stat
+                          label="1m Velocity"
+                          value={masked ? "••••••" : metrics.spend1m.toString()}
+                        />
                         <Stat
                           label="15m Velocity"
-                          value={metrics.spend15m.toString()}
+                          value={masked ? "••••••" : metrics.spend15m.toString()}
                           tone={isCritical ? "danger" : undefined}
                           note={
                             exhaust !== null
@@ -323,7 +331,10 @@ export function StatusPanel() {
                               : undefined
                           }
                         />
-                        <Stat label="1h Velocity" value={metrics.spend1h.toString()} />
+                        <Stat
+                          label="1h Velocity"
+                          value={masked ? "••••••" : metrics.spend1h.toString()}
+                        />
                       </div>
                       {cap > 0n && (
                         <div style={{ marginTop: 12 }}>
@@ -373,7 +384,7 @@ export function StatusPanel() {
                     <div className="grid">
                       <Stat
                         label="Spent in window"
-                        value={window.total.toString()}
+                        value={masked ? "••••••" : window.total.toString()}
                         note={pct === null ? "no window cap set" : `${pct}% of the ${cap} cap`}
                       />
                       <Stat
@@ -410,14 +421,22 @@ export function StatusPanel() {
                     <div className="grid">
                       <Stat
                         label="Per-transaction cap"
-                        value={policy.per_tx_cap === 0n ? "off" : policy.per_tx_cap.toString()}
+                        value={
+                          masked
+                            ? "••••••"
+                            : policy.per_tx_cap === 0n
+                              ? "off"
+                              : policy.per_tx_cap.toString()
+                        }
                       />
                       <Stat
                         label="Rolling cap"
                         value={
-                          policy.window_cap === 0n
-                            ? "off"
-                            : `${policy.window_cap} / ${policy.window_secs}s`
+                          masked
+                            ? "••••••"
+                            : policy.window_cap === 0n
+                              ? "off"
+                              : `${policy.window_cap} / ${policy.window_secs}s`
                         }
                       />
                       <Stat
