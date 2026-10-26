@@ -47,8 +47,8 @@ export function computePolicyDiff(
         status: "added",
       })),
       warnings: [],
-      highImpact: false,
-      highImpactReasons: [],
+      highImpact: true,
+      highImpactReasons: ["No policy is currently installed; review the authority this policy will grant."],
     };
   }
 
