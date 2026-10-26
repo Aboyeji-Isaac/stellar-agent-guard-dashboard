@@ -88,6 +88,14 @@ export function computePolicyDiff(
     warnings.push("New policy shortens the dead-man switch grace period.");
     highImpactReasons.push("The dead-man switch grace period is shortened.");
   }
+  if (oldConfig.dms_grace_secs > 0n && newConfig.dms_grace_secs === 0n) {
+    warnings.push("New policy disables the dead-man switch grace period.");
+    highImpactReasons.push("The dead-man switch is disabled.");
+  }
+
+  if (oldConfig.paused && !newConfig.paused) {
+    highImpactReasons.push("The policy will no longer start paused.");
+  }
 
   if (!oldConfig.allow_any_recipient && newConfig.allow_any_recipient) {
     highImpactReasons.push("Transfers to any recipient will be allowed.");
