@@ -40,6 +40,13 @@ describe("policyDiff", () => {
     assert.strictEqual(increased.highImpactReasons.length, 2);
   });
 
+  it("flags a shorter rolling window because the cap resets sooner", () => {
+    const oldConfig = { ...emptyConfig, window_cap: 500n, window_secs: 86400n };
+    const diff = computePolicyDiff(oldConfig, { ...oldConfig, window_secs: 3600n });
+    assert.strictEqual(diff.highImpact, true);
+    assert.match(diff.highImpactReasons[0] ?? "", /rolling-window duration is shortened/);
+  });
+
   it("flags broadening recipient, asset and protocol permissions", () => {
     const oldConfig = {
       ...emptyConfig,
