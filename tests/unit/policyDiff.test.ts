@@ -85,6 +85,14 @@ describe("policyDiff", () => {
     assert.strictEqual(diff.highImpact, true);
   });
 
+  it("flags disabling the dead-man switch or removing the paused state", () => {
+    const oldConfig = { ...emptyConfig, dms_grace_secs: 3600n, paused: true };
+    const diff = computePolicyDiff(oldConfig, { ...oldConfig, dms_grace_secs: 0n, paused: false });
+    assert.strictEqual(diff.highImpact, true);
+    assert.ok(diff.highImpactReasons.some((reason) => /dead-man switch is disabled/.test(reason)));
+    assert.ok(diff.highImpactReasons.some((reason) => /no longer start paused/.test(reason)));
+  });
+
   it("does not flag unchanged or narrowing recipient permissions", () => {
     const oldConfig = { ...emptyConfig, allow_any_recipient: true, recipients: ["GOLD"] };
     const diff = computePolicyDiff(oldConfig, { ...oldConfig, allow_any_recipient: false });
