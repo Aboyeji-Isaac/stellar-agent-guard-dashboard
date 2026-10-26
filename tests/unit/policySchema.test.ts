@@ -10,6 +10,7 @@ import {
 } from "../../lib/guard/policySchema.ts";
 import { EMPTY_DRAFT, type PolicyDraft } from "../../lib/guard/policyForm.ts";
 import type { AssetCapOverride } from "../../lib/guard/assetCapsCsv.ts";
+import { NETWORK } from "../../lib/guard/network.ts";
 
 const ASSET = "CDCYDGBGS5AZ5BZS6XY2SK2PHJHSOEGTN3N4INCK34KF6GU2BGC7Z6MB";
 const RECIPIENT = "GAOBCRXTCO4ZCBNHALJUMJJ5JDXNOUZ7U6VZJX4UBTXAHQEO66IPU6PH";
@@ -66,7 +67,7 @@ test("policyToExport / importPolicyFromJson round-trips a full config", () => {
 test("exported JSON carries the versioned schema and issue-specified field names", () => {
   const parsed = policyToExport(fullConfig, assetCaps);
   assert.equal(parsed.version, POLICY_SCHEMA_VERSION);
-  assert.equal(parsed.network, "testnet");
+  assert.equal(parsed.network, NETWORK.name);
   assert.equal(parsed.max_amount_per_tx, "1000");
   assert.equal(parsed.window_cap, "5000");
   assert.equal(parsed.window_seconds, "86400");
