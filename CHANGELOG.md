@@ -10,6 +10,8 @@ derived from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.
 
 ### Features
 
+- **policy**: require focused review when a policy install broadens authority (Closes #296)
+
 - **guard**: add rotateAgentKey operation function (`552f76b`)
 - **scripts**: read-only instance inspector (`e4e55b6`)
 - **ui**: deploy and configure page (`f8f7a08`)
