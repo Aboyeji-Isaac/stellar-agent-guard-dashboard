@@ -74,6 +74,13 @@ export function computePolicyDiff(
     warnings.push("New policy lowers the rolling-window cap.");
   }
   if (
+    oldConfig.window_secs > 0n &&
+    newConfig.window_secs > 0n &&
+    newConfig.window_secs < oldConfig.window_secs
+  ) {
+    highImpactReasons.push("The rolling-window duration is shortened, allowing the cap to reset sooner.");
+  }
+  if (
     newConfig.dms_grace_secs > 0n &&
     oldConfig.dms_grace_secs > 0n &&
     newConfig.dms_grace_secs < oldConfig.dms_grace_secs
