@@ -165,7 +165,7 @@ function formatPath(path: ReadonlyArray<PropertyKey>): string {
 }
 
 // ---------------------------------------------------------------------------
-// Export: PolicyConfig + asset caps -> PolicyExportV1 -> JSON text
+// Export: PolicyConfig + asset caps + network -> PolicyExportV2 -> JSON text
 // ---------------------------------------------------------------------------
 
 function renderAmount(value: bigint): string {
@@ -203,10 +203,13 @@ export function policyToExport(
 }
 
 /** Serialized file text, matching the trailing-newline convention used by exportAssetCapsJson. */
-export function exportPolicyToJson(config: PolicyConfig, assetCaps: AssetCapOverride[]): string {
-  return `${JSON.stringify(policyToExport(config, assetCaps), null, 2)}\n`;
+export function exportPolicyToJson(
+  config: PolicyConfig,
+  assetCaps: AssetCapOverride[],
+  network: string = NETWORK.name,
+): string {
+  return `${JSON.stringify(policyToExport(config, assetCaps, network), null, 2)}\n`;
 }
-
 /** `YYYY-MM-DDTHH-mm-ss-sssZ.guard-policy.json`, filesystem-safe on every OS. */
 export function policyExportFilename(now: Date = new Date()): string {
   const stamp = now.toISOString().replace(/[:.]/g, "-");
@@ -243,7 +246,7 @@ export function exportPolicyDraft(draft: PolicyDraft, network: string = NETWORK.
 }
 
 // ---------------------------------------------------------------------------
-// Import: JSON text -> PolicyExportV1 (validated) -> PolicyDraft
+// Import: JSON text -> PolicyExportV2 (validated for the active network) -> PolicyDraft
 // ---------------------------------------------------------------------------
 
 function parseAmount(value: string): bigint {
