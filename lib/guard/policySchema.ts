@@ -92,8 +92,7 @@ function accountAddressField(label: string) {
 /** A cap/duration field: digits only, blank means "off" (0). Rejects negative values by construction. */
 function nonNegativeAmountField(label: string) {
   return z.string().refine((value) => /^\d*$/.test(value), {
-    message:
-      `${label} must be a non-negative whole number of units (digits only), blank to disable; maximum i128 value`,
+    message: `${label} must be a non-negative whole number of units (digits only), blank to disable; maximum i128 value`,
   });
 }
 
@@ -225,7 +224,10 @@ export type PolicyExportOutcome =
  * overrides, which `buildPolicyConfig` does not check on its own) and, if
  * valid, produces the file text and a timestamped filename.
  */
-export function exportPolicyDraft(draft: PolicyDraft, network: string = NETWORK.name): PolicyExportOutcome {
+export function exportPolicyDraft(
+  draft: PolicyDraft,
+  network: string = NETWORK.name,
+): PolicyExportOutcome {
   const assetCapIssues: FieldIssue[] = validateAssetCapOverrides(draft.assetCaps).map(
     (message) => ({
       field: "assetCaps",
@@ -257,7 +259,10 @@ function parseAmount(value: string): bigint {
 export type PolicyImportResult =
   { ok: true; draft: PolicyDraft } | { ok: false; issues: PolicyImportIssue[] };
 
-export function importPolicyFromJson(source: string, expectedNetwork: string = NETWORK.name): PolicyImportResult {
+export function importPolicyFromJson(
+  source: string,
+  expectedNetwork: string = NETWORK.name,
+): PolicyImportResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(source);
@@ -280,11 +285,14 @@ export function importPolicyFromJson(source: string, expectedNetwork: string = N
   if (data.network !== expectedNetwork) {
     return {
       ok: false,
-      issues: [{
-        path: "network",
-        message: `This file targets "${data.network}", but the dashboard is configured for "${expectedNetwork}". ` +
-          "Switch networks or import a matching export.",
-      }],
+      issues: [
+        {
+          path: "network",
+          message:
+            `This file targets "${data.network}", but the dashboard is configured for "${expectedNetwork}". ` +
+            "Switch networks or import a matching export.",
+        },
+      ],
     };
   }
 

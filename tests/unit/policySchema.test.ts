@@ -277,7 +277,10 @@ test("importPolicyFromJson accepts a valid large positive whole number", () => {
 });
 
 test("importPolicyFromJson rejects a file for a different network", () => {
-  const result = importPolicyFromJson(exportPolicyToJson(fullConfig, assetCaps, "mainnet"), "testnet");
+  const result = importPolicyFromJson(
+    exportPolicyToJson(fullConfig, assetCaps, "mainnet"),
+    "testnet",
+  );
   assert.equal(result.ok, false);
   if (result.ok) return;
   const networkIssue = result.issues.find((issue) => issue.path === "network");
@@ -291,7 +294,11 @@ test("importPolicyFromJson requires contract IDs for asset and protocol identifi
   const assetResult = importPolicyFromJson(JSON.stringify(parsedAsset));
   assert.equal(assetResult.ok, false);
   if (assetResult.ok) return;
-  assert.ok(assetResult.issues.some((issue) => issue.path === "assets[0]" && /contract address/.test(issue.message)));
+  assert.ok(
+    assetResult.issues.some(
+      (issue) => issue.path === "assets[0]" && /contract address/.test(issue.message),
+    ),
+  );
 
   const parsedProtocol = JSON.parse(exportPolicyToJson(fullConfig, assetCaps));
   parsedProtocol.allowed_protocols = [{ contract: RECIPIENT, functions: ["swap"] }];

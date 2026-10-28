@@ -69,7 +69,7 @@ import {
 } from "../lib/guard/guardScoped.ts";
 import { useToast } from "../lib/guard/useToast.ts";
 import { exportPolicyDraft, importPolicyFromJson } from "../lib/guard/policySchema.ts";
-import { NETWORK } from "../lib/guard/network.ts";
+
 
 /**
  * The no-code configurator.
@@ -512,7 +512,10 @@ export function PolicyForm() {
       }
       setPendingPolicyImport(bindToScope(activeScope, result.draft));
       setError(null);
-      toast.success("Policy file validated", "Review the preview before applying it to the unsaved form.");
+      toast.success(
+        "Policy file validated",
+        "Review the preview before applying it to the unsaved form.",
+      );
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : String(caught);
       setError(`Policy import failed: ${message}`);
@@ -1280,10 +1283,10 @@ export function PolicyForm() {
             <strong id="policy-import-preview-title">Preview imported policy draft</strong>
             <p className="tiny">
               This file targets the <strong>{NETWORK.name}</strong> network and passed schema and
-              identifier validation. Applying it only replaces the editable form; it does not install
-              a policy or change on-chain state.
+              identifier validation. Applying it only replaces the editable form; it does not
+              install a policy or change on-chain state.
             </p>
-            <p className="tiny mono">{describeDraft(policyImportApproval.value)}</p>
+            <p className="tiny mono">{describeDraft(policyImportApproval)}</p>
             <p className="tiny muted">
               The draft remains unsaved until you complete the normal validation, simulation, wallet
               signing and post-write chain read.
@@ -1291,7 +1294,7 @@ export function PolicyForm() {
             <div className="row">
               <button
                 onClick={() => {
-                  setDraft(policyImportApproval.value);
+                  setDraft(policyImportApproval);
                   setAssetCapChanges({});
                   setError(null);
                   setPendingPolicyImport(null);
